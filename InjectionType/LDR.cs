@@ -4,7 +4,6 @@ using System.IO;
 using System.MemoryInteraction;
 using System.Reflection;
 using System.Text;
-using System.WinApi;
 
 namespace Trion_Injector.InjectionType
 {
