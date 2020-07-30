@@ -28,15 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TopPanel = new System.Windows.Forms.Panel();
             this.MinimizeLable = new System.Windows.Forms.Label();
             this.ExitLabel = new System.Windows.Forms.Label();
             this.LogoLabel = new System.Windows.Forms.Label();
             this.ProcessList = new System.Windows.Forms.ListBox();
-            this.processBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.ProcessBox = new System.Windows.Forms.GroupBox();
             this.InjectionSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.LoadLibraryInectionRadioButton = new System.Windows.Forms.RadioButton();
@@ -53,7 +51,6 @@
             this.InjectInformationLabel = new System.Windows.Forms.Label();
             this.ProcessSearchTextBox = new System.Windows.Forms.TextBox();
             this.TopPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.processBindingSource)).BeginInit();
             this.ProcessBox.SuspendLayout();
             this.InjectionSettingsGroupBox.SuspendLayout();
             this.DllListGroupBox.SuspendLayout();
@@ -118,9 +115,6 @@
             // 
             this.ProcessList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(54)))), ((int)(((byte)(61)))));
             this.ProcessList.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ProcessList.DataBindings.Add(new System.Windows.Forms.Binding("SelectedValue", this.processBindingSource, "Id", true));
-            this.ProcessList.DataSource = this.processBindingSource;
-            this.ProcessList.DisplayMember = "ProcessName";
             this.ProcessList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProcessList.ForeColor = System.Drawing.Color.White;
             this.ProcessList.FormattingEnabled = true;
@@ -130,10 +124,6 @@
             this.ProcessList.TabIndex = 1;
             this.ProcessList.ValueMember = "Id";
             this.ProcessList.Click += new System.EventHandler(this.ProcessList_Click);
-            // 
-            // processBindingSource
-            // 
-            this.processBindingSource.DataSource = typeof(System.Diagnostics.Process);
             // 
             // ProcessBox
             // 
@@ -223,8 +213,8 @@
             // 
             // DllName
             // 
-            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.Black;
-            this.DllName.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
+            this.DllName.DefaultCellStyle = dataGridViewCellStyle3;
             this.DllName.HeaderText = "DLL Name";
             this.DllName.Name = "DllName";
             this.DllName.ReadOnly = true;
@@ -232,8 +222,8 @@
             // 
             // DllPath
             // 
-            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.Black;
-            this.DllPath.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Black;
+            this.DllPath.DefaultCellStyle = dataGridViewCellStyle4;
             this.DllPath.HeaderText = "DLL Path";
             this.DllPath.Name = "DllPath";
             this.DllPath.ReadOnly = true;
@@ -319,7 +309,6 @@
             this.Text = "Trion Injector";
             this.TopPanel.ResumeLayout(false);
             this.TopPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.processBindingSource)).EndInit();
             this.ProcessBox.ResumeLayout(false);
             this.InjectionSettingsGroupBox.ResumeLayout(false);
             this.InjectionSettingsGroupBox.PerformLayout();
@@ -338,7 +327,6 @@
         private System.Windows.Forms.Label ExitLabel;
         private System.Windows.Forms.ListBox ProcessList;
         private System.Windows.Forms.GroupBox ProcessBox;
-        private System.Windows.Forms.BindingSource processBindingSource;
         private System.Windows.Forms.GroupBox InjectionSettingsGroupBox;
         private System.Windows.Forms.Button InjectButton;
         private System.Windows.Forms.GroupBox DllListGroupBox;

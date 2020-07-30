@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.MemoryInteraction;
-using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
-
+using System.Xml.Serialization;
 using Trion_Injector.InjectionType;
 
 namespace Trion_Injector
@@ -15,6 +17,7 @@ namespace Trion_Injector
         #region Private Variables
         private int m_ProcessId;
         private Process[] m_Processes;
+        private List<object> Config;
         #endregion
 
         public Menu()
@@ -24,6 +27,21 @@ namespace Trion_Injector
             UpdateProcessButton_Click(null, null);
 
             ProcessList_Click(ProcessList, null);
+
+            Config = new List<object>();
+
+            using (FileStream fileStream = new FileStream("config.xml", FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(object[]));
+
+                if (fileStream.Length == 0)
+                {
+                    return;
+                }
+
+                Config.AddRange((object[])xmlSerializer.Deserialize(fileStream));
+                DllGridView.Rows.Add(Config.ToArray());
+            }
         }
 
         #region TopPanel
@@ -35,7 +53,18 @@ namespace Trion_Injector
         #endregion
 
         #region Exit Label
-        private void ExitLabel_Click(object sender, EventArgs e) => Environment.Exit(0);
+        private void ExitLabel_Click(object sender, EventArgs e)
+        {
+            if (DllGridView.Rows.Count != 0)
+            {
+                using (FileStream fileStream = new FileStream("config.xml", FileMode.Create, FileAccess.Write))
+                {
+                    new XmlSerializer(typeof(object[])).Serialize(fileStream, Config.ToArray());
+                }
+            }
+
+            Environment.Exit(0);
+        }
 
         private void ExitLabel_MouseEnter(object sender, EventArgs e) => ((Label)sender).BackColor = Color.Red;
 
@@ -60,11 +89,19 @@ namespace Trion_Injector
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                DllGridView.Rows.Add(new object[] { true, openFileDialog.SafeFileName, openFileDialog.FileName });
+                object[] newDll = { true, openFileDialog.SafeFileName, openFileDialog.FileName };
+
+                Config.AddRange(newDll);
+                DllGridView.Rows.Add(newDll);
             }
         }
 
-        private void DllClearButton_Click(object sender, EventArgs e) => DllGridView.Rows.Clear();
+        private void DllClearButton_Click(object sender, EventArgs e)
+        {
+            DllGridView.Rows.Clear();
+
+            File.Delete("config.xml");
+        }
 
         private void InjectButton_Click(object sender, EventArgs e)
         {
