@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Trion_Injector
 {
-    internal class NativeMethods
+    class NativeMethods
     {
         [DllImport("user32.dll")]
         public static extern bool ReleaseCapture();

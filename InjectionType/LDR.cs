@@ -46,7 +46,12 @@ namespace Trion_Injector.InjectionType
 
             if (!export)
             {
-                InjectHelper.CallExportFunction(dllName, exportName, process, executor);
+                ReturnCode exportCode = InjectHelper.CallExportFunction(dllName, exportName, process, executor);
+
+                if (exportCode == ReturnCode.EXPORT_FUNCTION_ERROR || exportCode == ReturnCode.CALL_FUNCTION_ERROR)
+                {
+                    return exportCode;
+                }
             }
 
             return ReturnCode.INJECTION_SUCCESSFUL;

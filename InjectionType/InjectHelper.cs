@@ -19,7 +19,7 @@ namespace Trion_Injector.InjectionType
 
                 if (!executor.Execute(ProcAddress, IntPtr.Zero))
                 {
-                    return ReturnCode.EXPORT_FUNCTION_ERROR;
+                    return ReturnCode.CALL_FUNCTION_ERROR;
                 }
             }
 

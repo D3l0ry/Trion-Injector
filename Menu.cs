@@ -32,12 +32,12 @@ namespace Trion_Injector
 
             using (FileStream fileStream = new FileStream("config.xml", FileMode.OpenOrCreate, FileAccess.Read))
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(object[]));
-
                 if (fileStream.Length == 0)
                 {
                     return;
                 }
+
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(object[]));
 
                 Config.AddRange((object[])xmlSerializer.Deserialize(fileStream));
                 DllGridView.Rows.Add(Config.ToArray());
@@ -79,10 +79,27 @@ namespace Trion_Injector
         private void MinimizeLable_MouseLeave(object sender, EventArgs e) => ((Label)sender).BackColor = Color.Transparent;
         #endregion
 
+        #region Process List
         private void ProcessList_Click(object sender, EventArgs e) => m_ProcessId = (int)((ListBox)sender).SelectedValue;
 
         private void UpdateProcessButton_Click(object sender, EventArgs e) => ProcessList.DataSource = m_Processes = Process.GetProcesses();
 
+        private void ProcessSearchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            string processSearch = (sender as TextBox).Text;
+
+            if (string.IsNullOrWhiteSpace(processSearch))
+            {
+                UpdateProcessButton_Click(null, null);
+
+                return;
+            }
+
+            ProcessList.DataSource = m_Processes.Where(X => X.ProcessName.Contains(processSearch)).ToList();
+        }
+        #endregion
+
+        #region Dll List
         private void DllAddButton_Click(object sender, EventArgs e)
         {
             openFileDialog.Filter = "dll files (*.dll)|*.dll";
@@ -98,10 +115,12 @@ namespace Trion_Injector
 
         private void DllClearButton_Click(object sender, EventArgs e)
         {
+            Config.Clear();
             DllGridView.Rows.Clear();
 
             File.Delete("config.xml");
         }
+        #endregion
 
         private void InjectButton_Click(object sender, EventArgs e)
         {
@@ -130,20 +149,6 @@ namespace Trion_Injector
             {
                 InjectInformationLabel.Text = "Process not found";
             }
-        }
-
-        private void ProcessSearchTextBox_TextChanged(object sender, EventArgs e)
-        {
-            string processSearch = (sender as TextBox).Text;
-
-            if (string.IsNullOrWhiteSpace(processSearch))
-            {
-                UpdateProcessButton_Click(null, null);
-
-                return;
-            }
-
-            ProcessList.DataSource = m_Processes.Where(X => X.ProcessName.Contains(processSearch)).ToList();
         }
     }
 }
