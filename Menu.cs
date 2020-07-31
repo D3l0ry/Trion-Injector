@@ -145,9 +145,9 @@ namespace Trion_Injector
                     }
                 }
             }
-            catch
+            catch(Exception EX)
             {
-                InjectInformationLabel.Text = "Process not found";
+                InjectInformationLabel.Text = EX.Message;
             }
         }
     }
