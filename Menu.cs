@@ -5,9 +5,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.MemoryInteraction;
-using System.Threading;
+using System.WinApi;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+
 using Trion_Injector.InjectionType;
 
 namespace Trion_Injector
@@ -41,6 +42,25 @@ namespace Trion_Injector
 
                 Config.AddRange((object[])xmlSerializer.Deserialize(fileStream));
                 DllGridView.Rows.Add(Config.ToArray());
+
+                for (int index = 0; index < DllGridView.Rows.Count; index++)
+                {
+                    if(!File.Exists((string)DllGridView.Rows[index].Cells["DllPath"].Value))
+                    {
+                        DllGridView.Rows.RemoveAt(index);
+
+                        continue;
+                    }
+
+                    IntPtr hLibrary =  Kernel32.LoadLibrary((string)DllGridView.Rows[index].Cells["DllPath"].Value);
+
+                    DllGridView.Rows[index].Cells["DllFunctions"] = new DataGridViewComboBoxCell
+                    {
+                        DataSource = InjectHelper.GetExportFunctions((string)DllGridView.Rows[index].Cells["DllName"].Value)
+                    };
+
+                    Kernel32.FreeLibrary(hLibrary);
+                }
             }
         }
 
@@ -82,6 +102,8 @@ namespace Trion_Injector
         #region Process List
         private void ProcessList_Click(object sender, EventArgs e) => m_ProcessId = (int)((ListBox)sender).SelectedValue;
 
+        private void ProcessList_SelectedIndexChanged(object sender, EventArgs e) => m_ProcessId = (int)((ListBox)sender).SelectedValue;
+
         private void UpdateProcessButton_Click(object sender, EventArgs e) => ProcessList.DataSource = m_Processes = Process.GetProcesses();
 
         private void ProcessSearchTextBox_TextChanged(object sender, EventArgs e)
@@ -102,14 +124,20 @@ namespace Trion_Injector
         #region Dll List
         private void DllAddButton_Click(object sender, EventArgs e)
         {
-            openFileDialog.Filter = "dll files (*.dll)|*.dll";
-
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                object[] newDll = { true, openFileDialog.SafeFileName, openFileDialog.FileName };
+                IntPtr hLibrary = Kernel32.LoadLibrary(openFileDialog.FileName);
+
+                object[] newDll = {true, openFileDialog.SafeFileName, openFileDialog.FileName};
 
                 Config.AddRange(newDll);
                 DllGridView.Rows.Add(newDll);
+                DllGridView.Rows[DllGridView.Rows.Count - 1].Cells["DllFunctions"] = new DataGridViewComboBoxCell
+                {
+                    DataSource = InjectHelper.GetExportFunctions(openFileDialog.SafeFileName)
+                };
+
+                Kernel32.FreeLibrary(hLibrary);
             }
         }
 
@@ -141,11 +169,11 @@ namespace Trion_Injector
                             continue;
                         }
 
-                        InjectInformationLabel.Text = $"{dllRow.Cells[1].Value} - {injector.Injecting((string)dllRow.Cells[1].Value, (string)dllRow.Cells[2].Value, "DllMain", process, memoryManager)}";
+                        InjectInformationLabel.Text = $"{dllRow.Cells[1].Value} - {injector.Injecting((string)dllRow.Cells[1].Value, (string)dllRow.Cells[2].Value, (string)dllRow.Cells[3].Value, process, memoryManager)}";
                     }
                 }
             }
-            catch(Exception EX)
+            catch (Exception EX)
             {
                 InjectInformationLabel.Text = EX.Message;
             }

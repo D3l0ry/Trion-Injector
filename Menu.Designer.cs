@@ -29,13 +29,15 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TopPanel = new System.Windows.Forms.Panel();
             this.MinimizeLable = new System.Windows.Forms.Label();
             this.ExitLabel = new System.Windows.Forms.Label();
             this.LogoLabel = new System.Windows.Forms.Label();
             this.ProcessList = new System.Windows.Forms.ListBox();
+            this.processBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.ProcessBox = new System.Windows.Forms.GroupBox();
             this.InjectionSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.LoadLibraryInectionRadioButton = new System.Windows.Forms.RadioButton();
@@ -45,19 +47,19 @@
             this.DllEnable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.DllName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DllPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DllFunctions = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DllClearButton = new System.Windows.Forms.Button();
             this.DllAddButton = new System.Windows.Forms.Button();
             this.UpdateProcessButton = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.InjectInformationLabel = new System.Windows.Forms.Label();
             this.ProcessSearchTextBox = new System.Windows.Forms.TextBox();
-            this.processBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.TopPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.processBindingSource)).BeginInit();
             this.ProcessBox.SuspendLayout();
             this.InjectionSettingsGroupBox.SuspendLayout();
             this.DllListGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DllGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.processBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // TopPanel
@@ -130,6 +132,11 @@
             this.ProcessList.TabIndex = 1;
             this.ProcessList.ValueMember = "Id";
             this.ProcessList.Click += new System.EventHandler(this.ProcessList_Click);
+            this.ProcessList.SelectedIndexChanged += new System.EventHandler(this.ProcessList_SelectedIndexChanged);
+            // 
+            // processBindingSource
+            // 
+            this.processBindingSource.DataSource = typeof(System.Diagnostics.Process);
             // 
             // ProcessBox
             // 
@@ -204,7 +211,8 @@
             this.DllGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DllEnable,
             this.DllName,
-            this.DllPath});
+            this.DllPath,
+            this.DllFunctions});
             this.DllGridView.GridColor = System.Drawing.Color.White;
             this.DllGridView.Location = new System.Drawing.Point(87, 17);
             this.DllGridView.Name = "DllGridView";
@@ -213,14 +221,16 @@
             // 
             // DllEnable
             // 
+            this.DllEnable.Frozen = true;
             this.DllEnable.HeaderText = "Enable";
             this.DllEnable.Name = "DllEnable";
             this.DllEnable.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // DllName
             // 
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
-            this.DllName.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
+            this.DllName.DefaultCellStyle = dataGridViewCellStyle1;
+            this.DllName.Frozen = true;
             this.DllName.HeaderText = "DLL Name";
             this.DllName.Name = "DllName";
             this.DllName.ReadOnly = true;
@@ -228,13 +238,21 @@
             // 
             // DllPath
             // 
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Black;
-            this.DllPath.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
+            this.DllPath.DefaultCellStyle = dataGridViewCellStyle2;
+            this.DllPath.Frozen = true;
             this.DllPath.HeaderText = "DLL Path";
             this.DllPath.Name = "DllPath";
             this.DllPath.ReadOnly = true;
             this.DllPath.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.DllPath.Width = 196;
+            // 
+            // DllFunctions
+            // 
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
+            this.DllFunctions.DefaultCellStyle = dataGridViewCellStyle3;
+            this.DllFunctions.Frozen = true;
+            this.DllFunctions.HeaderText = "DLL Functions";
+            this.DllFunctions.Name = "DllFunctions";
             // 
             // DllClearButton
             // 
@@ -275,6 +293,10 @@
             this.UpdateProcessButton.UseVisualStyleBackColor = true;
             this.UpdateProcessButton.Click += new System.EventHandler(this.UpdateProcessButton_Click);
             // 
+            // openFileDialog
+            // 
+            this.openFileDialog.Filter = "dll files (*.dll)|*.dll";
+            // 
             // InjectInformationLabel
             // 
             this.InjectInformationLabel.AutoSize = true;
@@ -294,10 +316,6 @@
             this.ProcessSearchTextBox.Size = new System.Drawing.Size(159, 21);
             this.ProcessSearchTextBox.TabIndex = 1;
             this.ProcessSearchTextBox.TextChanged += new System.EventHandler(this.ProcessSearchTextBox_TextChanged);
-            // 
-            // processBindingSource
-            // 
-            this.processBindingSource.DataSource = typeof(System.Diagnostics.Process);
             // 
             // Menu
             // 
@@ -319,12 +337,12 @@
             this.Text = "Trion Injector";
             this.TopPanel.ResumeLayout(false);
             this.TopPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.processBindingSource)).EndInit();
             this.ProcessBox.ResumeLayout(false);
             this.InjectionSettingsGroupBox.ResumeLayout(false);
             this.InjectionSettingsGroupBox.PerformLayout();
             this.DllListGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DllGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.processBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -347,12 +365,13 @@
         private System.Windows.Forms.Button UpdateProcessButton;
         private System.Windows.Forms.RadioButton LoadLibraryInectionRadioButton;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn DllEnable;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DllName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DllPath;
         private System.Windows.Forms.Label InjectInformationLabel;
         private System.Windows.Forms.TextBox ProcessSearchTextBox;
         private System.Windows.Forms.BindingSource processBindingSource;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn DllEnable;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DllName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DllPath;
+        private System.Windows.Forms.DataGridViewComboBoxColumn DllFunctions;
     }
 }
 
