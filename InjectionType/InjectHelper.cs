@@ -82,7 +82,6 @@ namespace Trion_Injector.InjectionType
             int LoaderFlags;
             int NumberOfRvaAndSizes;
 
-
             public IMAGE_DATA_DIRECTORY DataDirectory;
         }
 
@@ -127,22 +126,22 @@ namespace Trion_Injector.InjectionType
             return ReturnCode.INJECTION_SUCCESSFUL;
         }
 
-        public static unsafe string[] GetExportFunctions(IntPtr baseAddress)
+        public static unsafe string[] GetExportFunctions(IntPtr hModule)
         {
-            List<string> functionName = new List<string>();
+            IMAGE_DOS_HEADER* dosHeader = (IMAGE_DOS_HEADER*)hModule;
+
+            IMAGE_NT_HEADERS* ntHeader = (IMAGE_NT_HEADERS*)(hModule + dosHeader->e_lfanew);
+
+            IMAGE_EXPORT_DIRECTORY* exportDirectory = (IMAGE_EXPORT_DIRECTORY*)(hModule + ntHeader->OptionalHeader.DataDirectory.VirtualAddress);
+
+            List<string> functionName = new List<string>(exportDirectory->NumberOfNames);
             functionName.Add(string.Empty);
 
-            IMAGE_DOS_HEADER* dosHeader = (IMAGE_DOS_HEADER*)baseAddress;
-
-            IMAGE_NT_HEADERS* ntHeader = (IMAGE_NT_HEADERS*)(baseAddress + dosHeader->e_lfanew);
-
-            IMAGE_EXPORT_DIRECTORY* exportDirectory = (IMAGE_EXPORT_DIRECTORY*)(baseAddress + ntHeader->OptionalHeader.DataDirectory.VirtualAddress);
-
-            uint* ptrNameFunction = (uint*)(baseAddress + exportDirectory->AddressOfNames);
+            uint* ptrNameFunction = (uint*)(hModule + exportDirectory->AddressOfNames);
 
             for(int index = 0; index < exportDirectory->NumberOfNames;index++)
             {
-                functionName.Add(Marshal.PtrToStringAnsi((IntPtr)((uint)baseAddress + ptrNameFunction[index])));
+                functionName.Add(Marshal.PtrToStringAnsi((IntPtr)((uint)hModule + ptrNameFunction[index])));
             }
 
             return functionName.ToArray();
