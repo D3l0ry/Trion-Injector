@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.MemoryInteraction;
-using System.Reflection;
 using System.Text;
+using System.WinApi;
 
 namespace Trion_Injector.InjectionType
 {
@@ -12,6 +12,7 @@ namespace Trion_Injector.InjectionType
         #region Public Methods
         public ReturnCode Injecting(string dllName, string path, string exportName, Process process, MemoryManager memoryManager)
         {
+            IntPtr hModule = IntPtr.Zero;
             bool export = string.IsNullOrWhiteSpace(exportName);
             IAllocator allocator = memoryManager.GetAllocator();
             Executor executor = memoryManager.GetExecutor();
@@ -23,21 +24,23 @@ namespace Trion_Injector.InjectionType
 
             if (!export)
             {
-                Assembly.LoadFrom(path);
+               hModule = Kernel32.LoadLibrary(path);
             }
 
-            IntPtr AllocationMemory = allocator.Alloc(dllName.Length + 1);
+            byte[] pathBytes = Encoding.Unicode.GetBytes(path);
+
+            IntPtr AllocationMemory = allocator.Alloc(pathBytes.Length);
             if (AllocationMemory == IntPtr.Zero)
             {
                 return ReturnCode.ALLOCATION_MEMORY_ERROR;
             }
 
-            if (!memoryManager.BlockCopy(Encoding.UTF8.GetBytes(path), 0, AllocationMemory, 0, (IntPtr)path.Length))
+            if (!memoryManager.BlockCopy(pathBytes, 0, AllocationMemory, 0, (IntPtr)pathBytes.Length))
             {
                 return ReturnCode.WRITE_LIBRARY_ERROR;
             }
 
-            if (!executor.Execute(executor.GetFunction("kernel32.dll","LoadLibraryA"), AllocationMemory))
+            if (!executor.Execute(executor.GetFunction("kernel32.dll","LoadLibraryW"), AllocationMemory))
             {
                 return ReturnCode.INJECTING_ERROR;
             }
@@ -52,6 +55,11 @@ namespace Trion_Injector.InjectionType
                 {
                     return exportCode;
                 }
+            }
+
+            if(!export)
+            {
+                Kernel32.FreeLibrary(hModule);
             }
 
             return ReturnCode.INJECTION_SUCCESSFUL;
