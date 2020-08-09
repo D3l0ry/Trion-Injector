@@ -9,10 +9,8 @@ namespace Trion_Injector.InjectionType
 {
     internal class LDR:IInjector
     {
-        #region Public Methods
         public ReturnCode Injecting(string dllName, string path, string exportName, Process process, MemoryManager memoryManager)
         {
-            IntPtr hModule = IntPtr.Zero;
             bool export = string.IsNullOrWhiteSpace(exportName);
             IAllocator allocator = memoryManager.GetAllocator();
             Executor executor = memoryManager.GetExecutor();
@@ -20,11 +18,6 @@ namespace Trion_Injector.InjectionType
             if (!File.Exists(path))
             {
                 return ReturnCode.FILE_NOT_FOUND;
-            }
-
-            if (!export)
-            {
-               hModule = Kernel32.LoadLibrary(path);
             }
 
             byte[] pathBytes = Encoding.Unicode.GetBytes(path);
@@ -57,13 +50,7 @@ namespace Trion_Injector.InjectionType
                 }
             }
 
-            if(!export)
-            {
-                Kernel32.FreeLibrary(hModule);
-            }
-
             return ReturnCode.INJECTION_SUCCESSFUL;
         }
-        #endregion
     }
 }
