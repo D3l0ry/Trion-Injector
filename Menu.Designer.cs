@@ -303,7 +303,7 @@
             this.InjectInformationLabel.BackColor = System.Drawing.Color.Transparent;
             this.InjectInformationLabel.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.InjectInformationLabel.ForeColor = System.Drawing.Color.White;
-            this.InjectInformationLabel.Location = new System.Drawing.Point(338, 315);
+            this.InjectInformationLabel.Location = new System.Drawing.Point(258, 315);
             this.InjectInformationLabel.Name = "InjectInformationLabel";
             this.InjectInformationLabel.Size = new System.Drawing.Size(162, 23);
             this.InjectInformationLabel.TabIndex = 7;

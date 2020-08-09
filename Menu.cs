@@ -38,28 +38,26 @@ namespace Trion_Injector
                     return;
                 }
 
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(object[]));
-
-                Config.AddRange((object[])xmlSerializer.Deserialize(fileStream));
+                Config.AddRange((object[])new XmlSerializer(typeof(object[])).Deserialize(fileStream));
                 DllGridView.Rows.Add(Config.ToArray());
 
                 for (int index = 0; index < DllGridView.Rows.Count; index++)
                 {
-                    if(!File.Exists((string)DllGridView.Rows[index].Cells["DllPath"].Value))
+                    if (!File.Exists((string)DllGridView.Rows[index].Cells["DllPath"].Value))
                     {
                         DllGridView.Rows.RemoveAt(index);
 
                         continue;
                     }
 
-                    IntPtr hLibrary =  Kernel32.LoadLibrary((string)DllGridView.Rows[index].Cells["DllPath"].Value);
+                    IntPtr hModule = Kernel32.LoadLibrary((string)DllGridView.Rows[index].Cells["DllPath"].Value);
 
                     DllGridView.Rows[index].Cells["DllFunctions"] = new DataGridViewComboBoxCell
                     {
-                        DataSource = InjectHelper.GetExportFunctions((string)DllGridView.Rows[index].Cells["DllName"].Value)
+                        DataSource = InjectHelper.GetExportFunctions(hModule)
                     };
 
-                    Kernel32.FreeLibrary(hLibrary);
+                    Kernel32.FreeLibrary(hModule);
                 }
             }
         }
@@ -124,20 +122,30 @@ namespace Trion_Injector
         #region Dll List
         private void DllAddButton_Click(object sender, EventArgs e)
         {
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            try
             {
-                IntPtr hLibrary = Kernel32.LoadLibrary(openFileDialog.FileName);
-
-                object[] newDll = {true, openFileDialog.SafeFileName, openFileDialog.FileName};
-
-                Config.AddRange(newDll);
-                DllGridView.Rows.Add(newDll);
-                DllGridView.Rows[DllGridView.Rows.Count - 1].Cells["DllFunctions"] = new DataGridViewComboBoxCell
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    DataSource = InjectHelper.GetExportFunctions(openFileDialog.SafeFileName)
-                };
+                    IntPtr hModule = Kernel32.LoadLibrary(openFileDialog.FileName);
 
-                Kernel32.FreeLibrary(hLibrary);
+                    object[] newDll = { true, openFileDialog.SafeFileName, openFileDialog.FileName };
+
+                    Config.AddRange(newDll);
+                    DllGridView.Rows.Add(newDll);
+                    DllGridView.Rows[DllGridView.Rows.Count - 1].Cells["DllFunctions"] = new DataGridViewComboBoxCell
+                    {
+                        DataSource = InjectHelper.GetExportFunctions(hModule)
+                    };
+
+                    Kernel32.FreeLibrary(hModule);
+                }
+            }
+            catch (Exception Ex)
+            {
+                if (MessageBox.Show(Ex.Message + "\nПерезапустить приложение?", "Trion Injector - Ошибка", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                {
+                    Application.Restart();
+                }
             }
         }
 
@@ -169,7 +177,7 @@ namespace Trion_Injector
                             continue;
                         }
 
-                        InjectInformationLabel.Text = $"{dllRow.Cells[1].Value} - {injector.Injecting((string)dllRow.Cells[1].Value, (string)dllRow.Cells[2].Value, (string)dllRow.Cells[3].Value, process, memoryManager)}";
+                        InjectInformationLabel.Text = $"{(string)dllRow.Cells[1].Value} - {injector.Injecting((string)dllRow.Cells[1].Value, (string)dllRow.Cells[2].Value, (string)dllRow.Cells[3].Value, process, memoryManager)}";
                     }
                 }
             }
