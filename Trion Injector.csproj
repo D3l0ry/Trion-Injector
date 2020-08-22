@@ -53,7 +53,8 @@
   <ItemGroup>
     <Compile Include="InjectionType\IInjector.cs" />
     <Compile Include="InjectionType\InjectHelper.cs" />
-    <Compile Include="InjectionType\LDR.cs" />
+    <Compile Include="InjectionType\LoadLibrary.cs" />
+    <Compile Include="InjectionType\ManualMap.cs" />
     <Compile Include="InjectionType\ReturnCode.cs" />
     <Compile Include="Menu.cs">
       <SubType>Form</SubType>

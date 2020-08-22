@@ -142,10 +142,7 @@ namespace Trion_Injector
             }
             catch (Exception Ex)
             {
-                if (MessageBox.Show(Ex.Message + "\nПерезапустить приложение?", "Trion Injector - Ошибка", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-                {
-                    Application.Restart();
-                }
+                if (MessageBox.Show(Ex.Message + "\nПерезапустить приложение?", "Trion Injector - Ошибка", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes) Application.Restart();
             }
         }
 
@@ -166,18 +163,19 @@ namespace Trion_Injector
             {
                 process = Process.GetProcessById(m_ProcessId);
 
-                IInjector injector = new LDR();
+                IInjector injector = new LoadLibrary();
 
                 using (MemoryManager memoryManager = process.GetMemoryManager())
                 {
                     foreach (DataGridViewRow dllRow in DllGridView.Rows)
                     {
-                        if (!(bool)dllRow.Cells[0].Value)
-                        {
-                            continue;
-                        }
+                        if (!(bool)dllRow.Cells[0].Value) continue;
 
-                        InjectInformationLabel.Text = $"{(string)dllRow.Cells[1].Value} - {injector.Injecting((string)dllRow.Cells[1].Value, (string)dllRow.Cells[2].Value, (string)dllRow.Cells[3].Value, process, memoryManager)}";
+                        string dllName = dllRow.Cells[1].Value as string;
+                        string dllPath = dllRow.Cells[2].Value as string;
+                        string dllFunction = dllRow.Cells[3].Value as string;
+
+                        InjectInformationLabel.Text = $"{dllName} - {injector.Injecting(dllName, dllPath, dllFunction, process, memoryManager)}";
                     }
                 }
             }
